@@ -24,11 +24,10 @@ public:
     /* Boolean functions are for calls that don't return anything usefull but for which it can be usefull to
      * return a confirmation (true) after execution (some of these commands can take time, like `pay`). */
 
-    bool autoCleanInvoice(const unsigned int& cycleSeconds, const unsigned int& expiredBy);
+    bool autoCleanInvoice(const unsigned int& cycleSeconds=3600, const unsigned int& expiredBy=86400);
     bool check(const std::string& command);
-    bool close(const std::string& id, const bool& force=false, const unsigned int& timeout=30);
     bool connect(const std::string& host);
-    bool deleteInvoice(const std::string& label, const std::string& status);
+    bool delInvoice(const std::string& label, const std::string& status);
     bool delExpiredInvoice(const unsigned int& maxExpiryTime);
     bool delExpiredInvoices();
     bool disconnect(const std::string& id, const bool& force=false);
@@ -61,6 +60,7 @@ public:
     /* JSON Value functions are for calls whether complex, long, that need the JSON syntax (used in lightningd), or simply
      * not yet implemented.*/
 
+    Json::Value close(const std::string& id, const bool& force=false, const unsigned int& timeout=30);
     Json::Value decodepay(const std::string& bolt11);
     Json::Value getFeerate(const std::string& style);
     Json::Value getInfo();
