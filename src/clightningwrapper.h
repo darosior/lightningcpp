@@ -24,22 +24,38 @@ public:
     /* Boolean functions are for calls that don't return anything usefull but for which it can be usefull to
      * return a confirmation (true) after execution (some of these commands can take time, like `pay`). */
 
+    /** Set up autoclean of expired invoices. Perform cleanup every `cycleSeconds`, or disable autoclean if 0.
+     * Clean up expired invoices that have expired for `expiredBy` seconds. */
     bool autoCleanInvoice(const unsigned int& cycleSeconds=3600, const unsigned int& expiredBy=86400);
+    /** Don't run `command`, just verify parameters. */
     bool check(const std::string& command);
+    /** Connect to host identified by pubkey@host:port */
     bool connect(const std::string& host);
+    /** Delete unpaid invoice `label` with `status` */
     bool delInvoice(const std::string& label, const std::string& status);
+    /** Delete all expired invoices that expired as of given `maxExpiryTime` (a UNIX epoch time) */
     bool delExpiredInvoice(const unsigned int& maxExpiryTime);
+    /** Delete all expired invoices. */
     bool delExpiredInvoices();
+    /** Disconnect from `id` that has previously been connected to using connect; with `force` set, even if it has a current channel */
     bool disconnect(const std::string& id, const bool& force=false);
+    /** Fund channel with `id` using `sats` satoshis, at optional `feerate`.If `announce` is set to false, the channel is considered private.
+     * Only use outputs that have `minconf` confirmations. */
     bool fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate=0,
-            const unsigned int& minconf=0);
+            const bool& announce=true, const unsigned int& minconf=1);
+    /** Send payment specified by bolt11. `msat` should __only__ be specified if not in bolt11. */
     bool pay(const std::string& bolt11, const unsigned int& msat=0, const std::string& label="",
             const unsigned int& riskfactor=10, const float& maxFeePercent=0.5,
             const unsigned int& retryFor=60, const unsigned int& maxDelay=500, const unsigned int exemptFee=5000);
+    /** Send peer `id` a ping of length `len` asking for `pongbytes` */
     bool ping(const std::string& id, const unsigned int& len=128, const unsigned int& pongbytes=128);
+    /** Shut down the lightningd process */
     bool stop();
-    bool waitAnyInvoice(const unsigned int& lastpayIndex);
+    /** Wait for the next invoice to be paid, after `lastpay_index` (if specified) */
+    bool waitAnyInvoice(const unsigned int& lastpayIndex=0);
+    /** Wait for an incoming payment matching the invoice with `label`, or if the invoice expires */
     bool waitInvoice(const std::string& label);
+    /** Send to `address` `sats` satoshis via Bitcoin transaction, at optional `feerate`, using outputs with at least `minconf` confirmations. */
     bool withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate=0,
             const unsigned int& minconf=1);
     

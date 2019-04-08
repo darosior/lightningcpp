@@ -86,16 +86,18 @@ bool disconnect(const std::string& id, const bool& force=false)
 }
 
 bool fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate,
-            const bool& announce)
+            const bool& announce, const unsigned int& minconf)
 {
     std::string command = "fundchannel";
     Json::Value params(Json::arrayValue);
     params.append(id);
     params.append(sats);
-    if (!announce) {
+    if (feerate)
         params.append(feerate);
+    if (!announce)
         params.append(announce);
-    }
+    if (minconf > 1)
+        params.append(minconf); // TODO: check if 2 parameters above were defined so that the user don't bother to set them
     Json::Value res = sendCommand(command, params);
     return !res["txid"].empty();
 }
@@ -168,7 +170,7 @@ bool withdraw(const std::string& address, const unsigned int& sats, const unsign
     if (feerate)
         params.append(feerate);
     if (minconf > 1)
-        params.append(minconf);
+        params.append(minconf); // TODO: check if feerate is defined so that the user don't bother to set them
     Json::Value res = sendCommand(command, params);
     return !res["txid"].empty();
 }
