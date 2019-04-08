@@ -87,8 +87,8 @@ bool CLightningWrapper::disconnect(const std::string& id, const bool& force)
 
 
 bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats, const std::string& label,
-            const unsigned int& riskfactor, const float& maxFeePercent, const unsigned int& retryFor, 
-            const unsigned int& maxDelay, const unsigned int exemptFee)
+        const unsigned int& riskfactor, const float& maxFeePercent, const unsigned int& retryFor, 
+        const unsigned int& maxDelay, const unsigned int exemptFee)
 {
     std::string command = "pay";
     Json::Value params(Json::arrayValue);
@@ -145,7 +145,7 @@ bool CLightningWrapper::waitInvoice(const std::string& label)
 }
 
 std::string CLightningWrapper::fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate,
-            const bool& announce, const unsigned int& minconf)
+        const bool& announce, const unsigned int& minconf)
 {
     std::string command = "fundchannel";
     Json::Value params(Json::arrayValue);
@@ -162,7 +162,7 @@ std::string CLightningWrapper::fundChannel(const std::string& id, const unsigned
 }
 
 std::string CLightningWrapper::withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate,
-            const unsigned int& minconf)
+        const unsigned int& minconf)
 {
     std::string command = "withdraw";
     Json::Value params(Json::arrayValue);
@@ -174,6 +174,68 @@ std::string CLightningWrapper::withdraw(const std::string& address, const unsign
         params.append(minconf); // TODO: check if feerate is defined so that the user don't bother to set them
     Json::Value res = sendCommand(command, params);
     return res["txid"].asString();
+}
+
+std::string CLightningWrapper::getConfig(const std::string& param)
+{
+    std::string command = "listconfigs";
+    Json::Value params(Json::arrayValue);
+    params.append(param);
+    Json::Value res = sendCommand(command, params);
+    return res[param.c_str()].asString();
+}
+
+std::string CLightningWrapper::getInvoice(const unsigned int& msat, const std::string& label, const std::string& description,
+        const unsigned int& expiry, const std::vector<std::string>& fallbacks, const std::string& preimage)
+{
+    std::string command = "getinvoice";
+    Json::Value params(Json::arrayValue);
+    params.append(msat);
+    params.append(label);
+    params.append(description);
+    params.append(expiry);
+    if (!fallbacks.empty())
+    {
+        Json::Value addresses(Json::arrayValue);
+        for(auto const& fallback: fallbacks) {
+            addresses.append(fallback);
+        }
+        params.append(addresses);
+    }
+    if (preimage != "")
+        params.append(preimage);
+    Json::Value res = sendCommand(command, params);
+    return res["bolt11"].asString();
+}
+
+std::string CLightningWrapper::help()
+{
+    std::string command = "help";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params).asString();
+}
+
+std::string CLightningWrapper::helpOn(const std::string& call)
+{
+    std::string command = "help";
+    Json::Value params(Json::arrayValue);
+    params.append(call);
+    return sendCommand(command, params).asString(); // man page
+}
+
+std::string CLightningWrapper::newAddr(const std::string& type)
+{
+    std::string command = "newaddr";
+    Json::Value params(Json::arrayValue);
+    params.append(type);
+    return sendCommand(command, params).asString();
+}
+
+Json::Value CLightningWrapper::listNodes()
+{
+    std::string command = "listnodes";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params)["nodes"];
 }
 
 Json::Value CLightningWrapper::close(const std::string& id, const bool& force, const unsigned int& timeout)
