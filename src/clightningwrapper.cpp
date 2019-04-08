@@ -85,7 +85,6 @@ bool CLightningWrapper::disconnect(const std::string& id, const bool& force)
     return res.empty();
 }
 
-
 bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats, const std::string& label,
         const unsigned int& riskfactor, const float& maxFeePercent, const unsigned int& retryFor, 
         const unsigned int& maxDelay, const unsigned int exemptFee)
@@ -231,6 +230,113 @@ std::string CLightningWrapper::newAddr(const std::string& type)
     return sendCommand(command, params).asString();
 }
 
+Json::Value CLightningWrapper::close(const std::string& id, const bool& force, const unsigned int& timeout)
+{
+    std::string command = "close";
+    Json::Value params(Json::arrayValue);
+    params.append(force);
+    if (force)
+        params.append(timeout);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::decodepay(const std::string& bolt11)
+{
+    std::string command = "decodepay";
+    Json::Value params(Json::arrayValue);
+    params.append(bolt11);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::getFeerates(const std::string& style)
+{
+    std::string command = "feerates";
+    Json::Value params(Json::arrayValue);
+    params.append(style);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::getInfo()
+{
+    std::string command = "getinfo";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::getLog(const std::string& level)
+{
+    std::string command = "getlog";
+    Json::Value params(Json::arrayValue);
+    params.append(level);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::getRoute(const std::string& id, const unsigned int& msats, const unsigned int& riskfactor,
+        const unsigned int& cltv, const std::string& fromid, const float& fuzzPercent,
+        const std::vector<std::string>& exclude, const unsigned int& maxhops)
+{
+    std::string command = "getroute";
+    Json::Value params(Json::arrayValue);
+    params.append(id);
+    params.append(msats);
+    params.append(riskfactor);
+    params.append(cltv);
+    if (fromid != "")
+        params.append(fromid);
+    params.append(fuzzPercent);
+    if (!exclude.empty())
+    {
+        Json::Value ids(Json::arrayValue);
+        for (auto const& id: exclude) {
+            ids.append(id);
+        }
+        params.append(ids);
+    }
+    params.append(maxhops);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listChannels(const std::string& shortChannelId, const std::string& source)
+{
+    std::string command = "listchannels";
+    Json::Value params(Json::arrayValue);
+    if (shortChannelId != "")
+        params.append(shortChannelId);
+    if (source != "")
+        params.append(source);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listConfigs()
+{
+    std::string command = "listconfigs";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listForwards()
+{
+    std::string command = "listforwards";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listFunds()
+{
+    std::string command = "listfunds";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listInvoices(const std::string& label)
+{
+    std::string command = "listinvoices";
+    Json::Value params(Json::arrayValue);
+    if (label != "")
+        params.append(label);
+    return sendCommand(command, params);
+}
+
 Json::Value CLightningWrapper::listNodes()
 {
     std::string command = "listnodes";
@@ -238,15 +344,69 @@ Json::Value CLightningWrapper::listNodes()
     return sendCommand(command, params)["nodes"];
 }
 
-Json::Value CLightningWrapper::close(const std::string& id, const bool& force, const unsigned int& timeout)
+Json::Value CLightningWrapper::listPay(const std::string& bolt11)
 {
-    std::string command = "close";
+    std::string command = "listpays";
     Json::Value params(Json::arrayValue);
-    params.append(id);
-    if (force)
-    {
-        params.append(force);
-        params.append(timeout);
-    }
+    if (bolt11 != "")
+        params.append(bolt11);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listPayments(const std::string& bolt11, const std::string& payment_hash)
+{
+    std::string command = "listpayments";
+    Json::Value params(Json::arrayValue);
+    if (bolt11 != "")
+        params.append(bolt11);
+    if (payment_hash != "")
+        params.append(payment_hash);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listPeers(const std::string& id, const std::string& level)
+{
+     std::string command = "listpeers";
+    Json::Value params(Json::arrayValue);
+    if (id != "")
+        params.append(id);
+    if (level != "")
+        params.append(level);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::listSendPays(const std::string& bolt11, const std::string& payment_hash)
+{
+    std::string command = "listsendpays";
+    Json::Value params(Json::arrayValue);
+    if (bolt11 != "")
+        params.append(bolt11);
+    if (payment_hash != "")
+        params.append(payment_hash);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::payStatus(const std::string& bolt11)
+{
+    std::string command = "paystatus";
+    Json::Value params(Json::arrayValue);
+    if (bolt11 != "")
+        params.append(bolt11);
+    return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::sendPay(const std::string& route, const std::string& payment_hash, const std::string& label,
+        const unsigned int& msats, const std::string& bolt11)
+{
+    std::string command = "sendpay";
+    Json::Value params(Json::arrayValue);
+    params.append(route);
+    params.append(payment_hash);
+    if (label != "")
+        params.append(label);
+    if (msats)
+        params.append(msats);
+    if (bolt11 != "")
+        params.append(bolt11);
     return sendCommand(command, params);
 }
