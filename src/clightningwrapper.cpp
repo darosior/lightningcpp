@@ -85,6 +85,94 @@ bool disconnect(const std::string& id, const bool& force=false)
     return res.empty();
 }
 
+bool fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate,
+            const bool& announce)
+{
+    std::string command = "fundchannel";
+    Json::Value params(Json::arrayValue);
+    params.append(id);
+    params.append(sats);
+    if (!announce) {
+        params.append(feerate);
+        params.append(announce);
+    }
+    Json::Value res = sendCommand(command, params);
+    return !res["txid"].empty();
+}
+
+bool pay(const std::string& bolt11, const unsigned int& msats, const std::string& label,
+            const unsigned int& riskfactor, const float& maxFeePercent, const unsigned int& retryFor, 
+            const unsigned int& maxDelay, const unsigned int exemptFee)
+{
+    std::string command = "pay";
+    Json::Value params(Json::arrayValue);
+    params.append(bolt11);
+    if (msats)
+        params.append(msats);
+    if (label != "")
+        params.append(label);
+    params.append(riskfactor);
+    params.append(maxFeePercent);
+    params.append(retryFor);
+    params.append(maxDelay);
+    params.append(exemptFee);
+    Json::Value res = sendCommand(command, params);
+    return res["code"].empty();
+}
+
+bool ping(const std::string& id, const unsigned int& len, const unsigned int& pongbytes)
+{
+    std::string command = "ping";
+    Json::Value params(Json::arrayValue);
+    params.append(id);
+    params.append(len);
+    params.append(pongbytes);
+    Json::Value res = sendCommand(command, params);
+    return !res["totlen"].empty();
+}
+
+bool stop()
+{
+    std::string command = "stop";
+    Json::Value params(Json::arrayValue);
+    Json::Value res = sendCommand(command, params);
+    return true;
+}
+
+bool waitAnyInvoice(const unsigned int& lastpayIndex)
+{
+    std::string command = "waitanyinvoice";
+    Json::Value params(Json::arrayValue);
+    if (lastpayIndex)
+        params.append(lastpayIndex);
+    Json::Value res = sendCommand(command, params);
+    return res["complete"] == "true";
+}
+   
+bool waitInvoice(const std::string& label)
+{
+    std::string command = "waitinvoice";
+    Json::Value params(Json::arrayValue);
+    params.append(label);
+    Json::Value res = sendCommand(command, params);
+    return res["status"] == "paid";
+}
+    
+bool withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate=0,
+            const unsigned int& minconf=1)
+{
+    std::string command = "withdraw";
+    Json::Value params(Json::arrayValue);
+    params.append(address);
+    params.append(sats);
+    if (feerate)
+        params.append(feerate);
+    if (minconf > 1)
+        params.append(minconf);
+    Json::Value res = sendCommand(command, params);
+    return !res["txid"].empty();
+}
+
 Json::Value CLightningWrapper::close(const std::string& id, const bool& force, const unsigned int& timeout)
 {
     std::string command = "close";
