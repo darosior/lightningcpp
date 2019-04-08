@@ -39,10 +39,6 @@ public:
     bool delExpiredInvoices();
     /** Disconnect from `id` that has previously been connected to using connect; with `force` set, even if it has a current channel */
     bool disconnect(const std::string& id, const bool& force=false);
-    /** Fund channel with `id` using `sats` satoshis, at optional `feerate`.If `announce` is set to false, the channel is considered private.
-     * Only use outputs that have `minconf` confirmations. */
-    bool fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate=0,
-            const bool& announce=true, const unsigned int& minconf=1);
     /** Send payment specified by bolt11. `msat` should __only__ be specified if not in bolt11. */
     bool pay(const std::string& bolt11, const unsigned int& msat=0, const std::string& label="",
             const unsigned int& riskfactor=10, const float& maxFeePercent=0.5,
@@ -55,14 +51,15 @@ public:
     bool waitAnyInvoice(const unsigned int& lastpayIndex=0);
     /** Wait for an incoming payment matching the invoice with `label`, or if the invoice expires */
     bool waitInvoice(const std::string& label);
-    /** Send to `address` `sats` satoshis via Bitcoin transaction, at optional `feerate`, using outputs with at least `minconf` confirmations. */
-    bool withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate=0,
-            const unsigned int& minconf=1);
     
     
-    /* String functions are for calls which return a string as the only usefull information (like an address or 
-     * an invoice).*/
+    /* String functions are for calls which return a string as the only usefull information (like an address,
+     * an invoice, or a txid).*/
 
+    /** Fund channel with `id` using `sats` satoshis, at optional `feerate`.If `announce` is set to false, the channel is considered private.
+     * Only use outputs that have `minconf` confirmations. */
+    std::string fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate=0,
+            const bool& announce=true, const unsigned int& minconf=1);
     std::string getConfig(const std::string& param);
     std::string getInvoice(const unsigned int& msat, const std::string& label, const std::string& description,
             const unsigned int& expiry=3600, const std::vector<std::string>& fallbacks={},
@@ -71,7 +68,9 @@ public:
     std::string helpOn(const std::string& command); // man page
     std::string newAddr(const std::string& type="bech32");
     std::vector<std::string> listNodes();
-    
+    /** Send to `address` `sats` satoshis via Bitcoin transaction, at optional `feerate`, using outputs with at least `minconf` confirmations. */
+    std::string withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate=0,
+            const unsigned int& minconf=1);
     
     /* JSON Value functions are for calls whether complex, long, that need the JSON syntax (used in lightningd), or simply
      * not yet implemented.*/

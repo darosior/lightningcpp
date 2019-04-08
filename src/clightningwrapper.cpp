@@ -36,7 +36,7 @@ bool CLightningWrapper::check(const std::string& commandToCheck)
     Json::Value params(Json::arrayValue);
     params.append(commandToCheck);
     Json::Value res = sendCommand(command, params);
-    return res["command_to_check"] == commandToCheck.substr(0, commandToCheck.find(" ")); // The command can include multiple words
+    return res["command_to_check"].asString() == commandToCheck.substr(0, commandToCheck.find(" ")); // The command can include multiple words
 }
 
 bool CLightningWrapper::connect(const std::string& host)
@@ -48,7 +48,7 @@ bool CLightningWrapper::connect(const std::string& host)
     return !res["id"].empty();
 }
 
-bool delInvoice(const std::string& label, const std::string& status)
+bool CLightningWrapper::delInvoice(const std::string& label, const std::string& status)
 {
     std::string command = "delinvoice";
     Json::Value params(Json::arrayValue);
@@ -58,7 +58,7 @@ bool delInvoice(const std::string& label, const std::string& status)
     return true; // TODO: A better error check
 }
 
-bool delExpiredInvoice(const unsigned int& maxExpiryTime)
+bool CLightningWrapper::delExpiredInvoice(const unsigned int& maxExpiryTime)
 {
     std::string command = "delexpiredinvoice";
     Json::Value params(Json::arrayValue);
@@ -67,7 +67,7 @@ bool delExpiredInvoice(const unsigned int& maxExpiryTime)
     return res.empty();
 }
 
-bool delExpiredInvoices()
+bool CLightningWrapper::delExpiredInvoices()
 {
     std::string command = "delexpiredinvoice";
     Json::Value params(Json::arrayValue);
@@ -75,7 +75,7 @@ bool delExpiredInvoices()
     return res.empty();
 }
 
-bool disconnect(const std::string& id, const bool& force=false)
+bool CLightningWrapper::disconnect(const std::string& id, const bool& force)
 {
     std::string command = "disconnect";
     Json::Value params(Json::arrayValue);
@@ -85,24 +85,8 @@ bool disconnect(const std::string& id, const bool& force=false)
     return res.empty();
 }
 
-bool fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate,
-            const bool& announce, const unsigned int& minconf)
-{
-    std::string command = "fundchannel";
-    Json::Value params(Json::arrayValue);
-    params.append(id);
-    params.append(sats);
-    if (feerate)
-        params.append(feerate);
-    if (!announce)
-        params.append(announce);
-    if (minconf > 1)
-        params.append(minconf); // TODO: check if 2 parameters above were defined so that the user don't bother to set them
-    Json::Value res = sendCommand(command, params);
-    return !res["txid"].empty();
-}
 
-bool pay(const std::string& bolt11, const unsigned int& msats, const std::string& label,
+bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats, const std::string& label,
             const unsigned int& riskfactor, const float& maxFeePercent, const unsigned int& retryFor, 
             const unsigned int& maxDelay, const unsigned int exemptFee)
 {
@@ -122,7 +106,7 @@ bool pay(const std::string& bolt11, const unsigned int& msats, const std::string
     return res["code"].empty();
 }
 
-bool ping(const std::string& id, const unsigned int& len, const unsigned int& pongbytes)
+bool CLightningWrapper::ping(const std::string& id, const unsigned int& len, const unsigned int& pongbytes)
 {
     std::string command = "ping";
     Json::Value params(Json::arrayValue);
@@ -133,7 +117,7 @@ bool ping(const std::string& id, const unsigned int& len, const unsigned int& po
     return !res["totlen"].empty();
 }
 
-bool stop()
+bool CLightningWrapper::stop()
 {
     std::string command = "stop";
     Json::Value params(Json::arrayValue);
@@ -141,27 +125,44 @@ bool stop()
     return true;
 }
 
-bool waitAnyInvoice(const unsigned int& lastpayIndex)
+bool CLightningWrapper::waitAnyInvoice(const unsigned int& lastpayIndex)
 {
     std::string command = "waitanyinvoice";
     Json::Value params(Json::arrayValue);
     if (lastpayIndex)
         params.append(lastpayIndex);
     Json::Value res = sendCommand(command, params);
-    return res["complete"] == "true";
+    return res["complete"].asString() == "true";
 }
    
-bool waitInvoice(const std::string& label)
+bool CLightningWrapper::waitInvoice(const std::string& label)
 {
     std::string command = "waitinvoice";
     Json::Value params(Json::arrayValue);
     params.append(label);
     Json::Value res = sendCommand(command, params);
-    return res["status"] == "paid";
+    return res["status"].asString() == "paid";
 }
-    
-bool withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate=0,
-            const unsigned int& minconf=1)
+
+std::string CLightningWrapper::fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate,
+            const bool& announce, const unsigned int& minconf)
+{
+    std::string command = "fundchannel";
+    Json::Value params(Json::arrayValue);
+    params.append(id);
+    params.append(sats);
+    if (feerate)
+        params.append(feerate);
+    if (!announce)
+        params.append(announce);
+    if (minconf > 1)
+        params.append(minconf); // TODO: check if 2 parameters above were defined so that the user don't bother to set them
+    Json::Value res = sendCommand(command, params);
+    return res["txid"].asString();
+}
+
+std::string CLightningWrapper::withdraw(const std::string& address, const unsigned int& sats, const unsigned int& feerate,
+            const unsigned int& minconf)
 {
     std::string command = "withdraw";
     Json::Value params(Json::arrayValue);
@@ -172,7 +173,7 @@ bool withdraw(const std::string& address, const unsigned int& sats, const unsign
     if (minconf > 1)
         params.append(minconf); // TODO: check if feerate is defined so that the user don't bother to set them
     Json::Value res = sendCommand(command, params);
-    return !res["txid"].empty();
+    return res["txid"].asString();
 }
 
 Json::Value CLightningWrapper::close(const std::string& id, const bool& force, const unsigned int& timeout)
