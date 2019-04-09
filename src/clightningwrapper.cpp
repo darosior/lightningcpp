@@ -35,8 +35,12 @@ bool CLightningWrapper::check(const std::string& commandToCheck)
     std::string command = "check";
     Json::Value params(Json::arrayValue);
     params.append(commandToCheck);
-    Json::Value res = sendCommand(command, params);
-    return res["command_to_check"].asString() == commandToCheck.substr(0, commandToCheck.find(" ")); // The command can include multiple words
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res["command_to_check"].asString() == commandToCheck.substr(0, commandToCheck.find(" ")); // The command can include multiple words
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::connect(const std::string& host)
@@ -44,8 +48,12 @@ bool CLightningWrapper::connect(const std::string& host)
     std::string command = "connect";
     Json::Value params(Json::arrayValue);
     params.append(host);
-    Json::Value res = sendCommand(command, params);
-    return !res["id"].empty();
+    try {
+        Json::Value res = sendCommand(command, params);
+        return !res["id"].empty();
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::delInvoice(const std::string& label, const std::string& status)
@@ -54,8 +62,12 @@ bool CLightningWrapper::delInvoice(const std::string& label, const std::string& 
     Json::Value params(Json::arrayValue);
     params.append(label);
     params.append(status);
-    Json::Value res = sendCommand(command, params);
-    return true; // TODO: A better error check
+    try {
+        Json::Value res = sendCommand(command, params);
+        return true;
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::delExpiredInvoice(const unsigned int& maxExpiryTime)
@@ -63,16 +75,24 @@ bool CLightningWrapper::delExpiredInvoice(const unsigned int& maxExpiryTime)
     std::string command = "delexpiredinvoice";
     Json::Value params(Json::arrayValue);
     params.append(maxExpiryTime);
-    Json::Value res = sendCommand(command, params);
-    return res.empty();
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res.empty();
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::delExpiredInvoices()
 {
     std::string command = "delexpiredinvoice";
     Json::Value params(Json::arrayValue);
-    Json::Value res = sendCommand(command, params);
-    return res.empty();
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res.empty();
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::disconnect(const std::string& id, const bool& force)
@@ -81,8 +101,12 @@ bool CLightningWrapper::disconnect(const std::string& id, const bool& force)
     Json::Value params(Json::arrayValue);
     params.append(id);
     params.append(force);
-    Json::Value res = sendCommand(command, params);
-    return res.empty();
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res.empty();
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats, const std::string& label,
@@ -101,8 +125,12 @@ bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats
     params.append(retryFor);
     params.append(maxDelay);
     params.append(exemptFee);
-    Json::Value res = sendCommand(command, params);
-    return res["code"].empty();
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res["code"].empty();
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::ping(const std::string& id, const unsigned int& len, const unsigned int& pongbytes)
@@ -112,16 +140,24 @@ bool CLightningWrapper::ping(const std::string& id, const unsigned int& len, con
     params.append(id);
     params.append(len);
     params.append(pongbytes);
-    Json::Value res = sendCommand(command, params);
-    return !res["totlen"].empty();
+    try {
+        Json::Value res = sendCommand(command, params);
+        return !res["totlen"].empty();
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::stop()
 {
     std::string command = "stop";
     Json::Value params(Json::arrayValue);
-    Json::Value res = sendCommand(command, params);
-    return true;
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res.asString() == "Shutting down";
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 bool CLightningWrapper::waitAnyInvoice(const unsigned int& lastpayIndex)
@@ -130,8 +166,12 @@ bool CLightningWrapper::waitAnyInvoice(const unsigned int& lastpayIndex)
     Json::Value params(Json::arrayValue);
     if (lastpayIndex)
         params.append(lastpayIndex);
-    Json::Value res = sendCommand(command, params);
-    return res["complete"].asString() == "true";
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res["complete"].asString() == "true";
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
    
 bool CLightningWrapper::waitInvoice(const std::string& label)
@@ -139,8 +179,12 @@ bool CLightningWrapper::waitInvoice(const std::string& label)
     std::string command = "waitinvoice";
     Json::Value params(Json::arrayValue);
     params.append(label);
-    Json::Value res = sendCommand(command, params);
-    return res["status"].asString() == "paid";
+    try {
+        Json::Value res = sendCommand(command, params);
+        return res["status"].asString() == "paid";
+    } catch (const jsonrpc::JsonRpcException&) {
+        return false;
+    }
 }
 
 std::string CLightningWrapper::fundChannel(const std::string& id, const unsigned int& sats, const unsigned int& feerate,
