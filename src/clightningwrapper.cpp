@@ -3,7 +3,7 @@
 CLightningWrapper::CLightningWrapper(std::string& socket_path)
 {
     socketClient = new jsonrpc::UnixDomainSocketClient(socket_path);
-    client = new jsonrpc::Client(*socketClient, jsonrpc::JSONRPC_CLIENT_V1);   
+    client = new jsonrpc::Client(*socketClient, jsonrpc::JSONRPC_CLIENT_V2);
 }
 
 CLightningWrapper::~CLightningWrapper()

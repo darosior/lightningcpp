@@ -1,4 +1,4 @@
-LIBNAME=clightningwrapper.so
+LIBNAME=libclightningwrapper.so
 PREFIX=/usr/local
 
 CXX=g++
@@ -26,6 +26,13 @@ lib/$(LIBNAME): $(OBJ)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $< -o $@
+
+test: test.exx
+
+test.exx: lib/$(LIBNAME) test/main.cpp
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/main.cpp -o test.exx
+	./test.exx
+	rm test.exx
 
 clean:
 	rm -rf src/*.o lib/$(LIBNAME)
