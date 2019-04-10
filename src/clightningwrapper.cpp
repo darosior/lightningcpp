@@ -251,21 +251,6 @@ std::string CLightningWrapper::getInvoice(const unsigned int& msat, const std::s
     return res["bolt11"].asString();
 }
 
-std::string CLightningWrapper::help()
-{
-    std::string command = "help";
-    Json::Value params(Json::arrayValue);
-    return sendCommand(command, params).asString();
-}
-
-std::string CLightningWrapper::helpOn(const std::string& call)
-{
-    std::string command = "help";
-    Json::Value params(Json::arrayValue);
-    params.append(call);
-    return sendCommand(command, params).asString(); // man page
-}
-
 std::string CLightningWrapper::newAddr(const std::string& type)
 {
     std::string command = "newaddr";
@@ -338,6 +323,21 @@ Json::Value CLightningWrapper::getRoute(const std::string& id, const unsigned in
     }
     params.append(maxhops);
     return sendCommand(command, params);
+}
+
+Json::Value CLightningWrapper::help()
+{
+    std::string command = "help";
+    Json::Value params(Json::arrayValue);
+    return sendCommand(command, params)["help"];
+}
+
+Json::Value CLightningWrapper::helpOn(const std::string& call)
+{
+    std::string command = "help";
+    Json::Value params(Json::arrayValue);
+    params.append(call);
+    return sendCommand(command, params)["help"][0];
 }
 
 Json::Value CLightningWrapper::listChannels(const std::string& shortChannelId, const std::string& source)

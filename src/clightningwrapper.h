@@ -67,10 +67,7 @@ public:
     std::string getInvoice(const unsigned int& msats, const std::string& label, const std::string& description,
             const unsigned int& expiry=3600, const std::vector<std::string>& fallbacks={},
             const std::string& preimage="");
-    /** List available calls along with a small description for each*/
-    std::string help();
-    /** Returns a verbose description (man page) of a specified `call` */
-    std::string helpOn(const std::string& call);
+    
     /** Get a new address to fund a channel. Address `type` can be one of {bech32, p2sh-segwit} (default is bech32) */
     std::string newAddr(const std::string& type="bech32");
     /** Send to `address` `sats` satoshis via Bitcoin transaction, at optional `feerate`, using outputs with at least `minconf` confirmations. */
@@ -97,6 +94,10 @@ public:
     Json::Value getRoute(const std::string& id, const unsigned int& msats, const unsigned int& riskfactor, 
             const unsigned int& cltv=9, const std::string& fromid="", const float& fuzzPercent=5,
             const std::vector<std::string>& exlude={}, const unsigned int& maxhops=20);
+    /** List available calls along with a small description for each*/
+    Json::Value help();
+    /** Returns a verbose description (man page) of a specified `call` */
+    Json::Value helpOn(const std::string& call);
     /** Show channel `short_channel_id` or `source` (or all known channels, if not specified) */
     Json::Value listChannels(const std::string& shortChannelId="", const std::string& source="");
     /** List all configuration options */
