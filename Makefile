@@ -2,7 +2,7 @@ LIBNAME=libclightningwrapper.so
 PREFIX=/usr/local
 
 CXX=g++
-CXXFLAGS=-Wall -ggdb -std=c++11
+CXXFLAGS=-Wall -ggdb -std=c++11 -fPIC
 LDFLAGS=-lcurl -ljsoncpp -ljsonrpccpp-common -ljsonrpccpp-client
 SRC=$(wildcard src/*.cpp)
 HEADERS=$(wildcard src/*.h)
@@ -22,7 +22,7 @@ uninstall:
 
 lib/$(LIBNAME): $(OBJ)
 	mkdir -p lib
-	$(CXX) -shared -fPIC $(CXXFLAGS) $(LDFLAGS) $(OBJ) -o $@
+	$(CXX) -shared $(CXXFLAGS) $(LDFLAGS) $(OBJ) -o $@
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $< -o $@

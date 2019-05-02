@@ -1,6 +1,8 @@
 #ifndef CPPLIGHTNING_H
 #define CPPLIGHTNING_H
 
+#include "exception.h"
+
 #include <jsonrpccpp/client.h>
 #include <jsonrpccpp/client/connectors/unixdomainsocketclient.h>
 #include <string>

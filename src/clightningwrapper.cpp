@@ -1,5 +1,6 @@
 #include "clightningwrapper.h"
-
+#include "exception.h"
+#include <iostream>
 CLightningWrapper::CLightningWrapper(std::string& socket_path)
 {
     socketClient = new jsonrpc::UnixDomainSocketClient(socket_path);
@@ -15,8 +16,15 @@ CLightningWrapper::~CLightningWrapper()
 Json::Value CLightningWrapper::sendCommand(const std::string& command, const Json::Value& arguments)
 {
     Json::Value res;
-    //TODO: Handle exceptions
-    res = client->CallMethod(command, arguments);
+    try {
+        res = client->CallMethod(command, arguments);
+    } catch (jsonrpc::JsonRpcException& e) {
+        throw CLightningWrapperException(e.GetCode(), e.GetMessage());
+    } catch (std::exception& e) {
+        throw CLightningWrapperException(1, e.what());
+    } catch (...) {
+        throw CLightningWrapperException(1, std::string("C-Lightning wrapper crashed when sending : " + command));
+    }
     return res;
 }
 
@@ -38,7 +46,7 @@ bool CLightningWrapper::check(const std::string& commandToCheck)
     try {
         Json::Value res = sendCommand(command, params);
         return res["command_to_check"].asString() == commandToCheck.substr(0, commandToCheck.find(" ")); // The command can include multiple words
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -51,7 +59,7 @@ bool CLightningWrapper::connect(const std::string& host)
     try {
         Json::Value res = sendCommand(command, params);
         return !res["id"].empty();
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -65,7 +73,7 @@ bool CLightningWrapper::delInvoice(const std::string& label, const std::string& 
     try {
         Json::Value res = sendCommand(command, params);
         return true;
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -78,7 +86,7 @@ bool CLightningWrapper::delExpiredInvoice(const unsigned int& maxExpiryTime)
     try {
         Json::Value res = sendCommand(command, params);
         return res.empty();
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -90,7 +98,7 @@ bool CLightningWrapper::delExpiredInvoices()
     try {
         Json::Value res = sendCommand(command, params);
         return res.empty();
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -104,7 +112,7 @@ bool CLightningWrapper::disconnect(const std::string& id, const bool& force)
     try {
         Json::Value res = sendCommand(command, params);
         return res.empty();
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -128,7 +136,7 @@ bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats
     try {
         Json::Value res = sendCommand(command, params);
         return res["code"].empty();
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -143,7 +151,7 @@ bool CLightningWrapper::ping(const std::string& id, const unsigned int& len, con
     try {
         Json::Value res = sendCommand(command, params);
         return !res["totlen"].empty();
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -155,7 +163,7 @@ bool CLightningWrapper::stop()
     try {
         Json::Value res = sendCommand(command, params);
         return res.asString() == "Shutting down";
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -169,7 +177,7 @@ bool CLightningWrapper::waitAnyInvoice(const unsigned int& lastpayIndex)
     try {
         Json::Value res = sendCommand(command, params);
         return res["complete"].asString() == "true";
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
@@ -182,7 +190,7 @@ bool CLightningWrapper::waitInvoice(const std::string& label)
     try {
         Json::Value res = sendCommand(command, params);
         return res["status"].asString() == "paid";
-    } catch (const jsonrpc::JsonRpcException&) {
+    } catch (const CLightningWrapperException&) {
         return false;
     }
 }
