@@ -4,7 +4,7 @@
 ## Installation
 This library uses [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp) and a [Unix domain socket](https://en.wikipedia.org/wiki/Unix_domain_socket) (which default location is `~/.lightning`)to make the calls. Thus its installation is necessary to use lightning-cpp. Recommended way is to build it from source (here for Debian but dependencies are [here](https://github.com/cinemast/libjson-rpc-cpp)) :  
 ```shell
-apt install libcurl4 libmicrohttpd-dev libjsoncpp-dev libargtable2-dev cmake libhiredis-dev catch
+apt install libcurl4 libmicrohttpd-dev libjsoncpp-dev libargtable2-dev cmake libhiredis-dev catch libcurl4-openssl-dev
 git clone git://github.com/cinemast/libjson-rpc-cpp.git
 mkdir -p libjson-rpc-cpp/build
 cd libjson-rpc-cpp/build
