@@ -56,6 +56,15 @@ int main (int argc, char * argv[])
     std::cout << lightning->help() << std::endl;
     std::cout << "OK" << std::endl << std::endl;
 
+    std::cout << "Testing invoice generation" << std::endl;
+    std::cout << lightning->genInvoice(10, "test", "test") << std::endl;
+    std::cout << "Testing invoice deletion" << std::endl;
+    if (lightning->delInvoice(std::string("test"), std::string("unpaid")))
+        std::cout << "OK" << std::endl;
+    else
+        std::cout << "Could not delete invoice" << std::endl;
+    std::cout << std::endl;
+
     std::cout << "Tests OK" << std::endl;
     delete lightning;
 }

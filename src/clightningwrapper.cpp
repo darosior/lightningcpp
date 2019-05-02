@@ -228,10 +228,10 @@ std::string CLightningWrapper::getConfig(const std::string& param)
     return res[param.c_str()].asString();
 }
 
-std::string CLightningWrapper::getInvoice(const unsigned int& msat, const std::string& label, const std::string& description,
+std::string CLightningWrapper::genInvoice(const unsigned int& msat, const std::string& label, const std::string& description,
         const unsigned int& expiry, const std::vector<std::string>& fallbacks, const std::string& preimage)
 {
-    std::string command = "getinvoice";
+    std::string command = "invoice";
     Json::Value params(Json::arrayValue);
     params.append(msat);
     params.append(label);
