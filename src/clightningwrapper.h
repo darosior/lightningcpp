@@ -47,6 +47,12 @@ public:
             const unsigned int& retryFor=60, const unsigned int& maxDelay=500, const unsigned int exemptFee=5000);
     /** Send peer `id` a ping of length `len` asking for `pongbytes` */
     bool ping(const std::string& id, const unsigned int& len=128, const unsigned int& pongbytes=128);
+    /**
+     * @brief Set routing fees for a given channel, or all channels.
+     * @param short channel id, channel id, or peer id of the channel to be modified.
+     * @param baseFee optional value in millisatoshi that is added as base fee to any routed payment.
+     * @param ppm optional value that is added proportionally per-millionths to any routed payment volume in satoshi. */
+    bool setRoutingFees(const std::string& id, const unsigned int& baseFee=0, const unsigned int& ppmFee=0);
     /** Shut down the lightningd process */
     bool stop();
     /** Wait for the next invoice to be paid, after `lastpay_index` (if specified) */

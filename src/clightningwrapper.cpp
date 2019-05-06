@@ -156,6 +156,23 @@ bool CLightningWrapper::ping(const std::string& id, const unsigned int& len, con
     }
 }
 
+bool CLightningWrapper::setRoutingFees(const std::string& id, const unsigned int& baseFee, const unsigned int& ppmFee)
+{
+    std::string command = "setchannelfee";
+    Json::Value params(Json::arrayValue);
+    params.append(id);
+    if (baseFee)
+        params.append(baseFee);
+    if (ppmFee)
+        params.append(ppmFee);
+    try {
+        Json::Value res = sendCommand(command, params);
+        return !res["base"].empty();
+    } catch (CLightningWrapperException&) {
+        return false;
+    }
+}
+
 bool CLightningWrapper::stop()
 {
     std::string command = "stop";
