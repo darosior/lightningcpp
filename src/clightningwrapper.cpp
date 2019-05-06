@@ -124,21 +124,23 @@ bool CLightningWrapper::pay(const std::string& bolt11, const unsigned int& msats
     std::string command = "pay";
     Json::Value params(Json::arrayValue);
     params.append(bolt11);
+    // `pay` will fail if sent a bolt11 containing an amount with another amount as parameter (even if it's 0)
     if (msats)
+    {
         params.append(msats);
-    if (label != "")
         params.append(label);
-    params.append(riskfactor);
-    params.append(maxFeePercent);
-    params.append(retryFor);
-    params.append(maxDelay);
-    params.append(exemptFee);
+        params.append(riskfactor);
+        params.append(maxFeePercent);
+        params.append(retryFor);
+        params.append(maxDelay);
+        params.append(exemptFee);
+    }
     try {
         Json::Value res = sendCommand(command, params);
         return res["code"].empty();
     } catch (const CLightningWrapperException&) {
         return false;
-    }
+    }}
 }
 
 bool CLightningWrapper::ping(const std::string& id, const unsigned int& len, const unsigned int& pongbytes)
@@ -162,9 +164,11 @@ bool CLightningWrapper::setRoutingFees(const std::string& id, const unsigned int
     Json::Value params(Json::arrayValue);
     params.append(id);
     if (baseFee)
+    {
         params.append(baseFee);
-    if (ppmFee)
-        params.append(ppmFee);
+        if (ppmFee)
+            params.append(ppmFee);
+    }
     try {
         Json::Value res = sendCommand(command, params);
         return !res["base"].empty();
@@ -220,11 +224,13 @@ std::string CLightningWrapper::fundChannel(const std::string& id, const unsigned
     params.append(id);
     params.append(sats);
     if (feerate)
+    {
         params.append(feerate);
-    if (!announce)
-        params.append(announce);
-    if (minconf > 1)
-        params.append(minconf); // TODO: check if 2 parameters above were defined so that the user don't bother to set them
+        if (!announce)
+            params.append(announce);
+        if (minconf > 1)
+            params.append(minconf); // TODO: check if 2 parameters above were defined so that the user don't bother to set them
+    }
     Json::Value res = sendCommand(command, params);
     return res["txid"].asString();
 }
@@ -237,9 +243,11 @@ std::string CLightningWrapper::withdraw(const std::string& address, const unsign
     params.append(address);
     params.append(sats);
     if (feerate)
+    {
         params.append(feerate);
-    if (minconf > 1)
-        params.append(minconf); // TODO: check if feerate is defined so that the user don't bother to set them
+        if (minconf > 1)
+            params.append(minconf); // TODO: check if feerate is defined so that the user don't bother to set them
+    }
     Json::Value res = sendCommand(command, params);
     return res["txid"].asString();
 }
