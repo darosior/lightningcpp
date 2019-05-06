@@ -288,6 +288,7 @@ Json::Value CLightningWrapper::close(const std::string& id, const bool& force, c
 {
     std::string command = "close";
     Json::Value params(Json::arrayValue);
+    params.append(id);
     params.append(force);
     if (force)
         params.append(timeout);
