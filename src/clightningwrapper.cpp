@@ -295,7 +295,7 @@ Json::Value CLightningWrapper::pay(const std::string& bolt11, const unsigned int
 {
     std::string command = "pay";
     Json::Value params(Json::objectValue);
-    params.append(bolt11);
+    params["bolt11"] = bolt11;
     if (msats)
         params["msat"] = msats;
     if (label != "")
