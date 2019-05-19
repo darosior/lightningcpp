@@ -39,11 +39,14 @@ Json::Value CLightningWrapper::autoCleanInvoice(const unsigned int& cycleSeconds
 
 Json::Value CLightningWrapper::check(const std::string& commandToCheck, const Json::Value& parameters)
 {
+    if (!parameters.isObject())
+        throw CLightningWrapperException(1, "The parameters of the command to check must be a JSON object");
     std::string command = "check";
     Json::Value params(Json::objectValue);
     params["command_to_check"] = commandToCheck;
-    if (!parameters.empty())
-        params.append(parameters);
+    for (const auto& key: parameters.getMemberNames()) {
+        params[key] = parameters[key];
+    }
     return sendCommand(command, params);
 }
 
@@ -282,7 +285,7 @@ Json::Value CLightningWrapper::newAddr(const std::string& type)
 {
     std::string command = "newaddr";
     Json::Value params(Json::objectValue);
-    params["type"] = type;
+    params["addresstype"] = type;
     return sendCommand(command, params);
 }
 
