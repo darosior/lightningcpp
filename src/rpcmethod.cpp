@@ -1,10 +1,15 @@
 #include "rpcmethod.h"
 
-RpcMethod::RpcMethod() {
+RpcMethod::RpcMethod():
+    name(""),
+    usage(""),
+    description(""),
+    longDescription("")
+{
     setMain([this](Json::Value& param){return this->main(param);});
 }
 
-RpcMethod::RpcMethod(std::string _name, std::string _usage, std::string _desc, std::string _longDesc) :
+RpcMethod::RpcMethod(std::string _name, std::string _usage, std::string _desc, std::string _longDesc):
     name(_name),
     usage(_usage),
     description(_desc),
