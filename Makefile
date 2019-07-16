@@ -30,9 +30,11 @@ lib/$(LIBNAME): $(OBJ)
 test: test.exx
 
 test.exx: lib/$(LIBNAME) test/main.cpp
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/plugin_hello.cpp -o test/plugin_hello.exx
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/plugin_bye.cpp -o test/plugin_bye.exx
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/main.cpp -o test.exx
-	./test.exx
-	rm test.exx
+	#./test.exx
+	#rm test.exx test/plugin_hello.exx test/plugin_bye.exx
 
 clean:
 	rm -rf src/*.o lib/$(LIBNAME)

@@ -1,8 +1,10 @@
+#include <assert.h>
+#include <clightningplugin.h>
+#include <clightningwrapper.h>
 #include <iostream>
 #include <stdlib.h>
-#include <assert.h>
-#include <clightningwrapper.h>
 #include <unistd.h>
+
 
 int main (int argc, char * argv[])
 {
@@ -10,8 +12,12 @@ int main (int argc, char * argv[])
     getcwd(cwd, sizeof(cwd));
     std::string bitcoin_dir = std::string(cwd) + "/test/bitcoin-dir";
     std::string lightning_dir = std::string(cwd) + "/test/lightning-dir";
+    // We test two plugins that do the same thing with different syntax
+    std::string hello_plugin_path = std::string(cwd) + "/test/plugin_hello.exx";
+    std::string bye_plugin_path = std::string(cwd) + "/test/plugin_bye.exx";
     std::string bitcoin_cmd = "bitcoind -daemon -regtest -server=1 -rpcuser=test -rpcpassword=test -datadir=" + bitcoin_dir;
     std::string lightning_cmd = "lightningd --network=regtest --addr=127.0.0.1:12345 --lightning-dir=" + lightning_dir;
+    lightning_cmd += " --plugin=" + hello_plugin_path + " --plugin=" + bye_plugin_path;
     std::cout << "Starting Bitcoin daemon in regtest" << std::endl;
     system(bitcoin_cmd.c_str());
     std::cout << "Starting Lightning daemon on top of it" << std::endl;
@@ -59,6 +65,13 @@ int main (int argc, char * argv[])
         std::cout << std::endl << "ALL TESTS PASSED" << std::endl;
     } catch (CLightningWrapperException &e) {
         std::cerr << std::endl << "TESTS DID NOT PASS" << std::endl;
+        std::cerr << e.getMessage() << std::endl;
+    }
+    std::cout << std::endl << "Calls to test plugins" << std::endl;
+    try {
+        lightning->sendCommand("hello", Json::Value(Json::objectValue));
+    } catch (CLightningWrapperException &e) {
+        std::cerr << std::endl << "FAILURE" << std::endl;
         std::cerr << e.getMessage() << std::endl;
     }
     std::cout << "Stopping lightningd" << std::endl;
