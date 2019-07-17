@@ -22,11 +22,12 @@ void Plugin::addOption(const Json::Value &option) {
 }
 
 void Plugin::printResponseSuccess(const Json::Value &result, const std::string &reqId) {
+    Json::FastWriter writer;
     Json::Value response;
-    response["jsonrpc"] = "2";
+    response["jsonrpc"] = "2.0";
     response["result"] = result;
     response["id"] = reqId;
-    std::cout << response;
+    std::cout << writer.write(response);
 }
 
 RpcMethod Plugin::generateManifest() {
