@@ -1,5 +1,5 @@
 # lightning-cpp
-*A C++11 wrapper to access the CLightning's JSON-RPC interface*  
+*A C++11 wrapper to build plugins for C-lightning and access its JSON-RPC interface*  
   
 ## Installation
 This library uses [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp) and a [Unix domain socket](https://en.wikipedia.org/wiki/Unix_domain_socket) (which default location is `~/.lightning`)to make the calls. Thus its installation is necessary to use lightning-cpp. Recommended way is to build it from source (here for Debian but dependencies are [here](https://github.com/cinemast/libjson-rpc-cpp)) :  
