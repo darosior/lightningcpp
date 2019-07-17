@@ -24,7 +24,7 @@ public:
      *
      * @param parameters The method parameters
      */
-    Json::Value main(Json::Value &parameters);
+    virtual Json::Value main(Json::Value &parameters);
 
     /**
      * Sets the default function to be executed when the method is called through lightningd.

@@ -2,12 +2,13 @@
 
 class Helloworld: public RpcMethod {
 public:
-    Helloworld() {
+    Helloworld(): RpcMethod() {
         name = "hello";
         description = "launch me so that I can greet the world";
-        setMain([&](Json::Value &parameters) {
-            return Json::Value("Hello world !");
-        });
+    }
+
+    Json::Value main(Json::Value &params) {
+        return Json::Value("Hello world !");
     }
 };
 

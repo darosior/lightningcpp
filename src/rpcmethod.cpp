@@ -19,7 +19,7 @@ RpcMethod::RpcMethod(std::string _name, std::string _usage, std::string _desc, s
 }
 
 Json::Value RpcMethod::main(Json::Value& parameters) {
-    return nullptr;
+    return Json::Value(Json::objectValue);
 }
 
 void RpcMethod::setMain(std::function<Json::Value(Json::Value&)> func) {
