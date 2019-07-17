@@ -2,7 +2,7 @@
 *A C++11 wrapper to build plugins for C-lightning and access its JSON-RPC interface*  
   
 ## Installation
-This library uses [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp) and a [Unix domain socket](https://en.wikipedia.org/wiki/Unix_domain_socket) (which default location is `~/.lightning`)to make the calls. Thus its installation is necessary to use lightning-cpp. Recommended way is to build it from source (here for Debian but dependencies are [here](https://github.com/cinemast/libjson-rpc-cpp)) :  
+This library makes an extensive use of [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp). Recommended way is to build it from source (here are Debian instructions but you can find more [here](https://github.com/cinemast/libjson-rpc-cpp)) :  
 ```shell
 apt install libcurl4 libmicrohttpd-dev libjsoncpp-dev libargtable2-dev cmake libhiredis-dev catch libcurl4-openssl-dev
 git clone git://github.com/cinemast/libjson-rpc-cpp.git
@@ -12,8 +12,7 @@ cmake -DUNIX_DOMAIN_SOCKET_CLIENT=YES .. && make -j8
 make install # as root
 ldconfig # as root
 ```  
-  
-Then you can install lightning-cpp :
+Then you can install lightningcpp :
 ```shell
 git clone git@github.com:darosior/lightningcpp.git
 cd lightningcpp
@@ -41,7 +40,7 @@ int main (int argc, char *argv[])
   
 ### Plugin
 
-You can write a plugin by whether inheriting the RpcMethod class :
+You can write a plugin by whether inheriting the `RpcMethod` class :
 ```cpp
 #include <clightningplugin.h>
 
@@ -67,7 +66,7 @@ int main(int argc, char *argv[]) {
 }
 ```
   
-Or you can instanciate a RpcMethod object and set the main function :
+Or you can instanciate an `RpcMethod` object and set the main function :
 ```cpp
 #include <clightningplugin.h>
 #include <string>
@@ -139,10 +138,12 @@ The RPC wrapper is just a class (`CLightningRpc`) with methods wrapping `lightni
 ### Plugin interface
 
 There are 2 classes for the Plugin management : `Plugin` and `RpcMethod`. Every RPC method added to `lightningd` must be an instance of
-`RpcMethod`, which is composed of a method's attributes (namely the name, usage, description and long_description) and a pointer to the
-function to be executed when the method is called through `lightningd`.  
-This pointer defaults to the `main(Json::Value&)` function of the same class. Any method main function must take a Json::Value object
-as parameter and return a Json::Value. You can assign the main function after instanciation with the `setMain()` method.  
+`RpcMethod`, which is composed of a method's attributes (namely the name, usage, description and long description) and a pointer to the
+function to be executed when the method is called through `lightningd`.   
+
+This pointer defaults to the `main(Json::Value&)` function of the same class.  
+Any method's main function must take a Json::Value object as parameter and return a Json::Value.  
+You can assign it after instanciation with the `setMain()` method (as per examples above).  
   
 ## More about C-lightning plugins
 
