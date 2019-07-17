@@ -4,7 +4,9 @@
 #include "clightningrpc.h"
 #include "rpcmethod.h"
 
+#include <functional>
 #include <jsonrpccpp/client.h>
+#include <map>
 #include <vector>
 
 class Plugin {
@@ -30,6 +32,14 @@ public:
      */
     void addOption(const Json::Value &option);
 
+    /**
+     * Subscribe to a lightningd notification.
+     *
+     * @param name The name/type of the notification ("connect", "warning", ..)
+     * @param handler The function to be executed upon notification reception
+     */
+    void subscribe(const std::string name, std::function<void(Json::Value&)> handler);
+
 protected:
     // Our RPC wrapper
     CLightningRpc *rpc;
@@ -38,7 +48,7 @@ protected:
     // Our options added to lightningd startup
     Json::Value options;
     // Our subscriptions to lightningd notifications
-    Json::Value subscriptions;
+    std::map<std::string, std::function<void(Json::Value&)>> subscriptions;
 
     /**
      * Creates the callback function for the "manifest" method

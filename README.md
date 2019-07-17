@@ -88,6 +88,44 @@ int main(int argc, char *argv[]) {
 }
 ```
   
+#### Notifications
+
+You can subscribe to [`lightningd`'s notifications](https://lightning.readthedocs.io/PLUGINS.html#event-notifications) :  
+```cpp
+#include <clightningplugin.h>
+#include <fstream>
+
+class Helloworld: public RpcMethod {
+public:
+    Helloworld(): RpcMethod() {
+        name = "hello";
+        description = "launch me so that I can greet the world";
+    }
+
+    Json::Value main(Json::Value &params) {
+        return Json::Value("Hello world !");
+    }
+};
+
+void uselessLogger(Json::Value &params) {
+    std::ofstream logFile;
+    logFile.open("log_file.log", std::ios::app);
+    std::string what = params["warning"]["log"].asString();
+    logFile << what << std::endl;
+    logFile.close();
+}
+
+int main(int argc, char *argv[]) {
+    Plugin testPlugin;
+    Helloworld helloworld;
+    testPlugin.addMethod(helloworld);
+    testPlugin.subscribe("warning", &uselessLogger);
+    testPlugin.start();
+
+    return 0;
+}
+```
+  
 ## Design
   
 ### Brief
@@ -98,7 +136,7 @@ int main(int argc, char *argv[]) {
   
 The RPC wrapper is just a class (`CLightningRpc`) with methods wrapping `lightningd`'s API.  
   
-### Plugin interface
+### Plugin interface
 
 There are 2 classes for the Plugin management : `Plugin` and `RpcMethod`. Every RPC method added to `lightningd` must be an instance of
 `RpcMethod`, which is composed of a method's attributes (namely the name, usage, description and long_description) and a pointer to the
@@ -106,7 +144,7 @@ function to be executed when the method is called through `lightningd`.
 This pointer defaults to the `main(Json::Value&)` function of the same class. Any method main function must take a Json::Value object
 as parameter and return a Json::Value. You can assign the main function after instanciation with the `setMain()` method.  
   
-## More about C-lightning plugins
+## More about C-lightning plugins
 
 You can find more about C-lightning plugins :  
 - On the [`lightningd/plugins` repo](https://github.com/lightningd/plugins)

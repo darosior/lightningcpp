@@ -4,8 +4,7 @@
 
 Plugin::Plugin():
     rpc(nullptr),
-    options(Json::Value(Json::arrayValue)),
-    subscriptions(Json::Value(Json::arrayValue))
+    options(Json::Value(Json::arrayValue))
 {}
 
 Plugin::~Plugin() {
@@ -49,8 +48,8 @@ RpcMethod Plugin::generateManifest() {
         }
         manifest["rpcmethods"] = methods;
         manifest["subscriptions"] = Json::Value(Json::arrayValue);
-        for (unsigned int i = 0; i < subscriptions.size(); i++)
-            manifest["subscriptions"].append(subscriptions[i]);
+        for (auto const &it : subscriptions)
+            manifest["subscriptions"].append(it.first);
 
         return manifest;
     });
@@ -83,9 +82,16 @@ void Plugin::start() {
         getline(std::cin, line);
         if (!reader.parse(line, msg, false))
             continue;
-        if (!msg["id"])
-            // FIXME: Handle notifications
+        if (!msg["method"] || !msg["params"] || !msg["jsonrpc"])
+            // Discard noise
             continue;
+        // If this is a notification
+        if (!msg["id"]) {
+            auto it = subscriptions.find(msg["method"].asString());
+            if (it != subscriptions.end())
+                it->second(msg["params"]);
+            continue;
+        }
         Json::Value method = msg["method"];
         if (!method)
             continue;
@@ -97,4 +103,9 @@ void Plugin::start() {
             }
         }
     }
+}
+
+void Plugin::subscribe(const std::string name, std::function<void(Json::Value&)> handler) {
+    // overrides if entry is already present
+    subscriptions[name] = handler;
 }

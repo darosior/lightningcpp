@@ -1,6 +1,5 @@
 #include <clightningplugin.h>
 #include <string>
-#include <fstream>
 
 int main(int argc, char *argv[]) {
     Plugin testPlugin;
@@ -13,4 +12,6 @@ int main(int argc, char *argv[]) {
     });
     testPlugin.addMethod(byeworld);
     testPlugin.start();
+
+    return 0;
 }
