@@ -1,5 +1,4 @@
 #include <clightningplugin.h>
-#include <string>
 
 class Helloworld: public RpcMethod {
 public:
@@ -7,7 +6,7 @@ public:
         name = "hello";
         description = "launch me so that I can greet the world";
         setMain([&](Json::Value &parameters) {
-            return Json::Value("Hello world!");
+            return Json::Value("Hello world !");
         });
     }
 };

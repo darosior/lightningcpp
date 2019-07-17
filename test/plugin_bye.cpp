@@ -7,8 +7,8 @@ int main(int argc, char *argv[]) {
     RpcMethod byeworld("bye", "[name]", "Launch me so I can say bye to someone", "A LONG DESC");
     byeworld.setMain([&](Json::Value &params) {
         std::string bye = "Bye bye ";
-        if (!params[0]["name"].empty())
-            return Json::Value(bye + params[0]["name"].asString());
+        if (!params.empty())
+            return Json::Value(bye + params.asString());
         return Json::Value(bye + "world !");
     });
     testPlugin.addMethod(byeworld);

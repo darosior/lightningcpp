@@ -16,7 +16,7 @@ int main (int argc, char * argv[])
     std::string hello_plugin_path = std::string(cwd) + "/test/plugin_hello.exx";
     std::string bye_plugin_path = std::string(cwd) + "/test/plugin_bye.exx";
     std::string bitcoin_cmd = "bitcoind -daemon -regtest -server=1 -rpcuser=test -rpcpassword=test -datadir=" + bitcoin_dir;
-    std::string lightning_cmd = "lightningd --network=regtest --addr=127.0.0.1:12345 --lightning-dir=" + lightning_dir;
+    std::string lightning_cmd = "lightningd --daemon --network=regtest --addr=127.0.0.1:12345 --lightning-dir=" + lightning_dir;
     lightning_cmd += " --plugin=" + hello_plugin_path + " --plugin=" + bye_plugin_path;
     std::cout << "Starting Bitcoin daemon in regtest" << std::endl;
     system(bitcoin_cmd.c_str());
@@ -62,18 +62,24 @@ int main (int argc, char * argv[])
         lightning->newAddr();
         std::cout << "paystatus" << std::endl;
         lightning->payStatus();
-        std::cout << std::endl << "ALL TESTS PASSED" << std::endl;
     } catch (CLightningWrapperException &e) {
         std::cerr << std::endl << "TESTS DID NOT PASS" << std::endl;
         std::cerr << e.getMessage() << std::endl;
     }
     std::cout << std::endl << "Calls to test plugins" << std::endl;
     try {
-        lightning->sendCommand("hello", Json::Value(Json::objectValue));
+        std::cout << "Testing Hello world plugin" << std::endl;
+        assert(lightning->sendCommand("hello", Json::Value(Json::objectValue)) == Json::Value("Hello world !"));
+        std::cout << "Ok." << std::endl;
+        std::cout << "Testing Bye world plugin" << std::endl;
+        assert(lightning->sendCommand("bye", Json::Value(Json::objectValue)) == Json::Value("Bye bye world !"));
+        assert(lightning->sendCommand("bye", Json::Value("Mars")) == Json::Value("Bye bye Mars"));
+        std::cout << "Ok." << std::endl;
     } catch (CLightningWrapperException &e) {
         std::cerr << std::endl << "FAILURE" << std::endl;
         std::cerr << e.getMessage() << std::endl;
     }
+    std::cout << std::endl << "ALL TESTS PASSED" << std::endl << std::endl;
     std::cout << "Stopping lightningd" << std::endl;
     lightning->stop();
     std::cout << "Stopping bitcoind" << std::endl;
