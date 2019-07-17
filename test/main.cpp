@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <clightningplugin.h>
-#include <clightningwrapper.h>
+#include <clightningrpc.h>
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
@@ -23,7 +23,7 @@ int main (int argc, char * argv[])
     std::cout << "Starting Lightning daemon on top of it" << std::endl;
     system(lightning_cmd.c_str());
     std::string socketPath = lightning_dir + "/lightning-rpc";
-    CLightningWrapper * lightning = new CLightningWrapper(socketPath);
+    CLightningRpc * lightning = new CLightningRpc(socketPath);
     std::cout << std::endl << "Some pseudo-random calls to test interface" << std::endl;
     try {
         std::cout << "getInfo" << std::endl;
@@ -62,7 +62,7 @@ int main (int argc, char * argv[])
         lightning->newAddr();
         std::cout << "paystatus" << std::endl;
         lightning->payStatus();
-    } catch (CLightningWrapperException &e) {
+    } catch (CLightningRpcException &e) {
         std::cerr << std::endl << "TESTS DID NOT PASS" << std::endl;
         std::cerr << e.getMessage() << std::endl;
     }
@@ -75,7 +75,7 @@ int main (int argc, char * argv[])
         assert(lightning->sendCommand("bye", Json::Value(Json::objectValue)) == Json::Value("Bye bye world !"));
         assert(lightning->sendCommand("bye", Json::Value("Mars")) == Json::Value("Bye bye Mars"));
         std::cout << "Ok." << std::endl;
-    } catch (CLightningWrapperException &e) {
+    } catch (CLightningRpcException &e) {
         std::cerr << std::endl << "FAILURE" << std::endl;
         std::cerr << e.getMessage() << std::endl;
     }

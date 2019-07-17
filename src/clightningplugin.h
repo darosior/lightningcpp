@@ -1,7 +1,7 @@
 #ifndef LIGHTNINGCPP_PLUGIN_H
 #define LIGHTNINGCPP_PLUGIN_H
 
-#include "clightningwrapper.h"
+#include "clightningrpc.h"
 #include "rpcmethod.h"
 
 #include <jsonrpccpp/client.h>
@@ -32,7 +32,7 @@ public:
 
 protected:
     // Our RPC wrapper
-    CLightningWrapper *rpc;
+    CLightningRpc *rpc;
     // Our RPC methods added to lightningd
     std::vector<RpcMethod> rpcMethods;
     // Our options added to lightningd startup

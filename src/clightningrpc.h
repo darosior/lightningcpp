@@ -1,22 +1,22 @@
-#ifndef CPPLIGHTNING_H
-#define CPPLIGHTNING_H
+#ifndef LIGHTNINGCPP_RPC_H
+#define LIGHTNINGCPP_RPC_H
 
-#include "exception.h"
+#include "rpcexception.h"
 
 #include <jsonrpccpp/client.h>
 #include <jsonrpccpp/client/connectors/unixdomainsocketclient.h>
 #include <string>
 #include <vector>
 
-class CLightningWrapper
+class CLightningRpc
 {
 private:
     jsonrpc::UnixDomainSocketClient * socketClient;
     jsonrpc::Client * client;
 
 public:
-    CLightningWrapper(std::string& socket_path);
-    ~CLightningWrapper();
+    CLightningRpc(std::string& socket_path);
+    ~CLightningRpc();
 
     /**
      * Sends a JSON-RPC command to the C-Lightning socket. Used by all following functions to communicate with lightningd.
@@ -281,4 +281,4 @@ public:
             const unsigned int& minconf=1);
 };
 
-#endif // CPPLIGHTNING_H
+#endif // LIGHTNINGCPP_WRAPPER_H

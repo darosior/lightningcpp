@@ -64,7 +64,7 @@ RpcMethod Plugin::generateInit() {
         if (!config)
             abort();
         std::string socketPath = config["lightning-dir"].asString() + "/" + config["rpc-file"].asString();
-        this->rpc = new CLightningWrapper(socketPath);
+        this->rpc = new CLightningRpc(socketPath);
         // init return is currently discarded by lightningd
         return Json::Value(Json::objectValue);
     });

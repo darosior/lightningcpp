@@ -1,4 +1,4 @@
-LIBNAME=libclightningwrapper.so
+LIBNAME=liblightningcpp.so
 PREFIX=/usr/local
 
 CXX=g++
@@ -29,19 +29,21 @@ lib/$(LIBNAME): $(OBJ)
 
 test: test/test.exx
 	./test/test.exx
-	# Sorry about that ==>
-	#for i in $(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $i;done
-	$(shell for i in $(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $i;done)
+	for i in $$(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $$i;done
 	rm test/test.exx test/plugin_hello.exx test/plugin_bye.exx
 
+aa: SHELL := /bin/bash
+aa:
+	for i in $$(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $$i;done
+
 test/plugin_hello.exx: lib/$(LIBNAME)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/plugin_hello.cpp -o test/plugin_hello.exx
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -llightningcpp test/plugin_hello.cpp -o test/plugin_hello.exx
 
 test/plugin_bye.exx: lib/$(LIBNAME)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/plugin_bye.cpp -o test/plugin_bye.exx
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -llightningcpp test/plugin_bye.cpp -o test/plugin_bye.exx
 
 test/test.exx: lib/$(LIBNAME) test/main.cpp test/plugin_hello.exx test/plugin_bye.exx
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -lclightningwrapper test/main.cpp -o test/test.exx
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -llightningcpp test/main.cpp -o test/test.exx
 
 clean:
 	rm -rf src/*.o lib/$(LIBNAME)
