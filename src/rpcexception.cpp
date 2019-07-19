@@ -2,7 +2,8 @@
 
 CLightningRpcException::CLightningRpcException(int code, const std::string& message):
     code(code),
-    message(message) {}
+    message(message)
+{}
 
 CLightningRpcException::~CLightningRpcException() throw() {}
 

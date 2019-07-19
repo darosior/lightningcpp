@@ -1,26 +1,32 @@
 #include "clightningplugin.h"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 Plugin::Plugin():
     rpc(nullptr),
     options(Json::Value(Json::arrayValue))
 {}
 
-Plugin::~Plugin() {
+Plugin::~Plugin()
+{
     if (rpc)
         delete rpc;
 }
 
-void Plugin::addMethod(const RpcMethod &method) {
+void Plugin::addMethod(const RpcMethod &method)
+{
     rpcMethods.push_back(method);
 }
 
-void Plugin::addOption(const Json::Value &option) {
+void Plugin::addOption(const Json::Value &option)
+{
     options.append(option);
 }
 
-void Plugin::printResponseSuccess(const Json::Value &result, const std::string &reqId) {
+void Plugin::printResponseSuccess(const Json::Value &result, const std::string &reqId)
+{
     Json::FastWriter writer;
     Json::Value response;
     response["jsonrpc"] = "2.0";
@@ -29,7 +35,8 @@ void Plugin::printResponseSuccess(const Json::Value &result, const std::string &
     std::cout << writer.write(response);
 }
 
-RpcMethod Plugin::generateManifest() {
+RpcMethod Plugin::generateManifest()
+{
     RpcMethod getManifest("getmanifest", "", "", "");
     getManifest.setMain([&](Json::Value &params) {
         Json::Value manifest(Json::objectValue);
@@ -56,7 +63,8 @@ RpcMethod Plugin::generateManifest() {
     return getManifest;
 }
 
-RpcMethod Plugin::generateInit() {
+RpcMethod Plugin::generateInit()
+{
     RpcMethod init("init", "", "", "");
     init.setMain([this](Json::Value &initObject) {
         Json::Value config = initObject["configuration"];
@@ -70,7 +78,8 @@ RpcMethod Plugin::generateInit() {
     return init;
 }
 
-void Plugin::start() {
+void Plugin::start()
+{
     Json::Value msg;
     Json::Reader reader;
     std::string line;
@@ -78,8 +87,7 @@ void Plugin::start() {
     rpcMethods.push_back(generateManifest());
     rpcMethods.push_back(generateInit());
 
-    while (true) {
-        getline(std::cin, line);
+    while (getline(std::cin, line)) {
         if (!reader.parse(line, msg, false))
             continue;
         if (!msg["method"] || !msg["params"] || !msg["jsonrpc"])
@@ -105,7 +113,8 @@ void Plugin::start() {
     }
 }
 
-void Plugin::subscribe(const std::string name, std::function<void(Json::Value&)> handler) {
+void Plugin::subscribe(const std::string name, std::function<void(Json::Value&)> handler)
+{
     // overrides if entry is already present
     subscriptions[name] = handler;
 }
