@@ -29,7 +29,7 @@ lib/$(LIBNAME): $(OBJ)
 
 test: test/test.exx
 	./test/test.exx
-	$$(for i in $$(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $$i;done)
+	$(for i in $$(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $$i;done)
 	rm test/test.exx test/plugin_hello.exx test/plugin_bye.exx
 
 aa: SHELL := /bin/bash
@@ -46,4 +46,4 @@ test/test.exx: lib/$(LIBNAME) test/main.cpp test/plugin_hello.exx test/plugin_by
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(SRC) -I $(shell pwd)/src -L $(shell pwd)/lib -llightningcpp test/main.cpp -o test/test.exx
 
 clean:
-	rm -rf src/*.o lib/$(LIBNAME)
+	rm -rf src/*.o lib/$(LIBNAME) test/*.exx
