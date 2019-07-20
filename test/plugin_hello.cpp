@@ -21,11 +21,21 @@ void uselessLogger(Json::Value &params) {
     logFile.close();
 }
 
+Json::Value dbDump(Json::Value &params) {
+    std::ofstream logFile;
+    logFile.open("db.log", std::ios::app);
+    std::string operation = params["writes"][0].asString();
+    logFile << operation << std::endl;
+    logFile.close();
+    return Json::Value(true);
+}
+
 int main(int argc, char *argv[]) {
     Plugin testPlugin;
     Helloworld helloworld;
     testPlugin.addMethod(helloworld);
     testPlugin.subscribe("warning", &uselessLogger);
+    testPlugin.hookSubscribe("db_write", &dbDump);
     testPlugin.start();
 
     return 0;

@@ -47,6 +47,14 @@ public:
      */
     void subscribe(const std::string name, std::function<void(Json::Value&)> handler);
 
+    /**
+     * Subscribe to a lightningd hook.
+     *
+     * @param name The name/type of the hook ("db_write", "htlc", ..)
+     * @param handler The function to be executed upon hook triggering
+     */
+    void hookSubscribe(const std::string name, std::function<Json::Value(Json::Value&)> handler);
+
 protected:
     // Our RPC wrapper
     CLightningRpc *rpc;
@@ -56,6 +64,8 @@ protected:
     Json::Value options;
     // Our subscriptions to lightningd notifications
     std::map<std::string, std::function<void(Json::Value&)>> subscriptions;
+    // Our subscriptions to lightningd notifications
+    std::map<std::string, std::function<Json::Value(Json::Value&)>> hookSubscriptions;
 
     /**
      * Creates the callback function for the "manifest" method

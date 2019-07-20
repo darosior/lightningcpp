@@ -67,7 +67,9 @@ RpcMethod Plugin::generateManifest()
         manifest["subscriptions"] = Json::Value(Json::arrayValue);
         for (const auto &it : subscriptions)
             manifest["subscriptions"].append(it.first);
-
+        for (const auto &it : hookSubscriptions)
+            manifest["hooks"].append(it.first);
+        
         return manifest;
     });
     return getManifest;
@@ -99,6 +101,11 @@ Json::Value Plugin::getOptionValue(const std::string &name)
     return Json::Value(Json::objectValue);
 }
 
+void Plugin::hookSubscribe(const std::string name, std::function<Json::Value(Json::Value&)> handler)
+{
+    hookSubscriptions[name] = handler;
+}
+
 void Plugin::start()
 {
     Json::Value msg;
@@ -114,19 +121,25 @@ void Plugin::start()
         if (!msg["method"] || !msg["params"] || !msg["jsonrpc"])
             // Discard noise
             continue;
-        // If this is a notification
-        if (!msg["id"]) {
-            auto it = subscriptions.find(msg["method"].asString());
-            if (it != subscriptions.end())
-                it->second(msg["params"]);
-            continue;
-        }
         Json::Value method = msg["method"];
         if (!method)
             continue;
+        Json::Value params = msg["params"];
+        // If this is a notification
+        if (!msg["id"]) {
+            auto it = subscriptions.find(method.asString());
+            if (it != subscriptions.end())
+                it->second(params);
+            continue;
+        }
+        auto it = hookSubscriptions.find(method.asString());
+        if (it != hookSubscriptions.end()) {
+            printResponseSuccess(it->second(params), msg["id"].asString());
+            continue;
+        }
         for (unsigned int i = 0; i < rpcMethods.size(); i++) {
             if (rpcMethods[i].getName() == method.asString()) {
-                Json::Value parameters = msg["params"];
+                Json::Value parameters = params;
                 printResponseSuccess(rpcMethods[i].mainFunc(parameters), msg["id"].asString());
                 break;
             }

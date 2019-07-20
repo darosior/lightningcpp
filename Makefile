@@ -33,6 +33,8 @@ test: test/test.exx
 	$(for i in $$(ps -edf |grep -E 'plugin_hello|plugin_bye' |head -n 2 |cut -c 10-15); do kill $$i;done)
 	$(kill $$(ps -edf |grep 'bitcoind -regtest -server=1 -rpcuser=test -rpcpassword=test' |cut -c 10-15))
 	rm test/test.exx test/plugin_hello.exx test/plugin_bye.exx
+	# Delete testplugins-created files
+	rm db.log log_file.log
 
 aa: SHELL := /bin/bash
 aa:
