@@ -1,8 +1,6 @@
 #include "clightningplugin.h"
 
-#include <chrono>
 #include <iostream>
-#include <thread>
 
 Plugin::Plugin():
     rpc(nullptr),
@@ -22,6 +20,17 @@ void Plugin::addMethod(const RpcMethod &method)
 
 void Plugin::addOption(const Json::Value &option)
 {
+    options.append(option);
+}
+
+void Plugin::addOption(const std::string &name, const std::string &defaultValue,
+                    const std::string &description, const std::string &type)
+{
+    Json::Value option(Json::objectValue);
+    option["name"] = name;
+    option["default"] = defaultValue;
+    option["description"] = description;
+    option["type"] = type;
     options.append(option);
 }
 
@@ -55,7 +64,7 @@ RpcMethod Plugin::generateManifest()
         }
         manifest["rpcmethods"] = methods;
         manifest["subscriptions"] = Json::Value(Json::arrayValue);
-        for (auto const &it : subscriptions)
+        for (const auto &it : subscriptions)
             manifest["subscriptions"].append(it.first);
 
         return manifest;
@@ -66,16 +75,27 @@ RpcMethod Plugin::generateManifest()
 RpcMethod Plugin::generateInit()
 {
     RpcMethod init("init", "", "", "");
-    init.setMain([this](Json::Value &initObject) {
-        Json::Value config = initObject["configuration"];
+    init.setMain([this](Json::Value &initParams) {
+        Json::Value config = initParams["configuration"];
         if (!config)
             abort();
         std::string socketPath = config["lightning-dir"].asString() + "/" + config["rpc-file"].asString();
-        this->rpc = new CLightningRpc(socketPath);
+        rpc = new CLightningRpc(socketPath);
+        // Add a field to each option json to store its value
+        for (unsigned int i = 0; i < options.size(); i++)
+            options[i]["value"] = initParams["options"][options[i]["name"].asString()];
         // init return is currently discarded by lightningd
         return Json::Value(Json::objectValue);
     });
     return init;
+}
+
+Json::Value Plugin::getOptionValue(const std::string &name)
+{
+    for (unsigned int i = 0; i < options.size(); i++)
+        if (options[i]["name"].asString() == name)
+            return options[i]["value"];
+    return Json::Value(Json::objectValue);
 }
 
 void Plugin::start()

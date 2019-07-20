@@ -31,6 +31,13 @@ public:
      * Add a new lightningd startup option.
      */
     void addOption(const Json::Value &option);
+    void addOption(const std::string &name, const std::string &defaultValue,
+                    const std::string &description, const std::string &type="string");
+
+    /**
+     * Get the value of an option.
+     */
+    Json::Value getOptionValue(const std::string &name);
 
     /**
      * Subscribe to a lightningd notification.

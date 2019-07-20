@@ -16,8 +16,14 @@ CLightningRpc::~CLightningRpc()
 Json::Value CLightningRpc::sendCommand(const std::string& command, const Json::Value& arguments)
 {
     Json::Value res;
+    // Always send parameters as an array for consistency
+    Json::Value args(Json::arrayValue);
+    if (!arguments.isArray() && !arguments.empty())
+        args[0] = arguments;
+    else
+        args = arguments;
     try {
-        res = client->CallMethod(command, arguments);
+        res = client->CallMethod(command, args);
     } catch (jsonrpc::JsonRpcException& e) {
         throw CLightningRpcException(e.GetCode(), e.GetMessage());
     } catch (std::exception& e) {

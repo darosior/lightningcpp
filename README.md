@@ -86,6 +86,33 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 ```
+   
+#### Options 
+
+You can add startup options, for example with the byebye plugin from above :  
+```cpp
+#include <clightningplugin.h>
+#include <string>
+
+int main(int argc, char *argv[]) {
+    Plugin testPlugin;
+    testPlugin.addOption("byename", "world", "who to say bye to");
+    RpcMethod byeworld("bye", "[name]", "Launch me so I can say bye to someone", "A LONG DESC");
+    byeworld.setMain([&](Json::Value &params) {
+        std::string bye = "Bye bye ";
+        if (params.size() == 1)
+            return Json::Value(bye + params[0].asString() + " !");
+        return Json::Value(bye + testPlugin.getOptionValue("byename").asString() + " !");
+    });
+    testPlugin.addMethod(byeworld);
+    testPlugin.start();
+
+    return 0;
+}
+```
+You can use `addOption()` by whether passing it a `Json::Value`, or the option
+name, default value, description, and type (which defaults to `string` and is
+not passed in the above example).  
   
 #### Notifications
 
