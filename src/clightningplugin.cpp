@@ -1,4 +1,5 @@
 #include "clightningplugin.h"
+#include "pluginexception.h"
 
 #include <iostream>
 
@@ -78,7 +79,7 @@ RpcMethod Plugin::generateInit()
     init.setMain([this](Json::Value &initParams) {
         Json::Value config = initParams["configuration"];
         if (!config)
-            abort();
+            throw CLightningPluginException(1, "'init' JSONRPC request doesn't have a 'configuration' field.");
         std::string socketPath = config["lightning-dir"].asString() + "/" + config["rpc-file"].asString();
         rpc = new CLightningRpc(socketPath);
         // Add a field to each option json to store its value

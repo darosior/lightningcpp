@@ -1,6 +1,6 @@
 #include "rpcexception.h"
 
-CLightningRpcException::CLightningRpcException(int code, const std::string& message):
+CLightningRpcException::CLightningRpcException(int code, const std::string &message):
     code(code),
     message(message)
 {}
@@ -14,7 +14,7 @@ int CLightningRpcException::getCode()
 
 const std::string CLightningRpcException::getMessage()
 {
-    return std::string("C-Lightning error : ") + message;
+    return std::string("C-Lightning RPC error : ") + message;
 }
 
 const char *CLightningRpcException::what() const throw()

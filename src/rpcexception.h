@@ -6,7 +6,7 @@
 class CLightningRpcException : public std::exception
 {
 public:
-    explicit CLightningRpcException(int code, const std::string& message);
+    explicit CLightningRpcException(int code, const std::string &message);
     ~CLightningRpcException() throw();
     
     int getCode();
