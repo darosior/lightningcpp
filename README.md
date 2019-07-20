@@ -30,8 +30,7 @@ su -c "make install"
 
 int main (int argc, char *argv[])
 {
-    std::string socketPath = "/home/darosior/.lightning/lightning-rpc";
-    CLightningWrapper lightning = CLightningWrapper(socketPath);
+    CLightningWrapper lightning = CLightningWrapper("/home/darosior/.lightning/lightning-rpc");
     std::cout << lightning.getInfo() << std::endl;
     
     return 0;
@@ -169,13 +168,13 @@ There are 2 classes for the Plugin management : `Plugin` and `RpcMethod`. Every 
 function to be executed when the method is called through `lightningd`.   
 
 This pointer defaults to the `main(Json::Value&)` function of the same class.  
-Any method's main function must take a Json::Value object as parameter and return a Json::Value.  
+Any method's main function must take a `Json::Value` object as parameter and return a `Json::Value`.  
 You can assign it after instanciation with the `setMain()` method (as per examples above).  
   
 ## More about C-lightning plugins
 
 You can find more about C-lightning plugins :  
-- On the [`lightningd/plugins` repo](https://github.com/lightningd/plugins)
+- On the [lightningd/plugins repo](https://github.com/lightningd/plugins)
 - On the [doc](https://lightning.readthedocs.io/PLUGINS.html)
 - On the [C-lightning repo](https://github.com/ElementsProject/lightning)
   

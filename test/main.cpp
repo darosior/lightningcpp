@@ -22,8 +22,7 @@ int main (int argc, char * argv[])
     system(bitcoin_cmd.c_str());
     std::cout << "Starting Lightning daemon on top of it" << std::endl;
     system(lightning_cmd.c_str());
-    std::string socketPath = lightning_dir + "/lightning-rpc";
-    CLightningRpc * lightning = new CLightningRpc(socketPath);
+    CLightningRpc * lightning = new CLightningRpc(lightning_dir + "/lightning-rpc");
     std::cout << std::endl << "Some pseudo-random calls to test interface" << std::endl;
     try {
         std::cout << "getInfo" << std::endl;
